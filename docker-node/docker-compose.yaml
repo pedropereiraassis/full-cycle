@@ -4,10 +4,7 @@ services:
   app:
     image: pedropereiraassis/docker-node
     container_name: app
-    working_dir: /app
     command: dockerize -wait tcp://db:3306 -timeout 20s npm start
-    volumes:
-      - .:/app
     tty: true
     networks: 
       - node-network
