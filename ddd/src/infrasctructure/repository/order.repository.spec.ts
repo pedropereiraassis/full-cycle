@@ -1,14 +1,14 @@
 import { Sequelize } from 'sequelize-typescript'
-import CustomerModel from '../db/sequelize/model/customer.model'
+import Order from '../../domain/entity/order'
+import OrderItem from '../../domain/entity/orderItem'
 import Customer from '../../domain/entity/customer'
-import CustomerRepository from './customer.repository'
 import Address from '../../domain/entity/address'
-import OrderItemModel from '../db/sequelize/model/order-item.model'
+import Product from '../../domain/entity/product'
+import CustomerModel from '../db/sequelize/model/customer.model'
+import CustomerRepository from './customer.repository'
 import ProductModel from '../db/sequelize/model/product.model'
 import ProductRepository from './product.repository'
-import Product from '../../domain/entity/product'
-import OrderItem from '../../domain/entity/orderItem'
-import Order from '../../domain/entity/order'
+import OrderItemModel from '../db/sequelize/model/order-item.model'
 import OrderModel from '../db/sequelize/model/order.model'
 import OrderRepository from './order.repository'
 
@@ -28,7 +28,6 @@ describe('Order repository test', () => {
   })
 
   afterEach(async () => {
-    await sequelize.truncate()
     await sequelize.close()
   })
 
