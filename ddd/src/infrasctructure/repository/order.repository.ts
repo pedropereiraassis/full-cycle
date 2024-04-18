@@ -26,17 +26,26 @@ export default class OrderRepository implements OrderRepositoryInterface {
   }
 
   async update(order: Order): Promise<void> {
-    await OrderModel.update(
-      {
-        customer_id: order.customerId,
-        total: order.total(),
-      },
-      {
-        where: {
-          id: order.id
-        },
-      },
-    )
+    const sequelize = OrderModel.sequelize
+    await sequelize.transaction(async (trx) => {
+      await OrderItemModel.destroy({
+        where: { order_id: order.id },
+        transaction: trx,
+      })
+      const items = order.items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        product_id: item.productId,
+        quantity: item.quantity,
+        order_id: order.id,
+      }))
+      await OrderItemModel.bulkCreate(items, { transaction: trx })
+      await OrderModel.update(
+        { total: order.total() },
+        { where: { id: order.id }, transaction: trx }
+      )
+    })
   }
 
   async find(id: string): Promise<Order> {

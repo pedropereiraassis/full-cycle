@@ -47,8 +47,8 @@ export default class Order {
     return this._items.reduce((acc, item) => acc + item.orderItemTotal(), 0);
   }
 
-  changeCustomer(customerId: string) {
-    this._customerId = customerId
+  changeItems(items: OrderItem[]) {
+    this._items = items
     this.validate()
   }
 }
