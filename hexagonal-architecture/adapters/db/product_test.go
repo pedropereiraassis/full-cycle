@@ -5,6 +5,7 @@ import (
 	"log"
 	"testing"
 
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/pedropereiraassis/full-cycle/hexagonal-architecture/adapters/db"
 	"github.com/pedropereiraassis/full-cycle/hexagonal-architecture/application"
 	"github.com/stretchr/testify/require"
