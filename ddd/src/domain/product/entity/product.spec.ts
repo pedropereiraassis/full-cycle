@@ -16,7 +16,7 @@ describe("Product unit tests", () => {
   it("should throw error when price is less than 0", () => {
     expect(() => {
       let product = new Product("1", "Product 1", -1)
-    }).toThrow("Price must be grater than 0")
+    }).toThrow("Price must be greater than 0")
   })
 
   it("should change name", () => {
