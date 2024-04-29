@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize-typescript"
 import CreateCustomerUseCase from "./create.customer.usecase"
-import CustomerModel from "../../../infrasctructure/customer/repository/sequelize/customer.model"
-import CustomerRepository from "../../../infrasctructure/customer/repository/sequelize/customer.repository"
+import CustomerModel from "../../../infrastructure/customer/repository/sequelize/customer.model"
+import CustomerRepository from "../../../infrastructure/customer/repository/sequelize/customer.repository"
 
 describe('Integration Test create customer use case', () => {
   let sequelize: Sequelize

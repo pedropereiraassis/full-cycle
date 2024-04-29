@@ -3,8 +3,8 @@ import Customer from '../../../domain/customer/entity/customer'
 import CustomerFactory from '../../../domain/customer/factory/customer.factory'
 import Address from '../../../domain/customer/value-object/address'
 import ListCustomerUseCase from './list.customer.usecase'
-import CustomerModel from '../../../infrasctructure/customer/repository/sequelize/customer.model'
-import CustomerRepository from '../../../infrasctructure/customer/repository/sequelize/customer.repository'
+import CustomerModel from '../../../infrastructure/customer/repository/sequelize/customer.model'
+import CustomerRepository from '../../../infrastructure/customer/repository/sequelize/customer.repository'
 
 describe('Integration Test list customer use case', () => {
   let sequelize: Sequelize

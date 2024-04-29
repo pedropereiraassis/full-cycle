@@ -2,8 +2,8 @@ import { Sequelize } from 'sequelize-typescript'
 import Customer from '../../../domain/customer/entity/customer'
 import Address from '../../../domain/customer/value-object/address'
 import UpdateCustomerUseCase from './update.customer.usecase'
-import CustomerModel from '../../../infrasctructure/customer/repository/sequelize/customer.model'
-import CustomerRepository from '../../../infrasctructure/customer/repository/sequelize/customer.repository'
+import CustomerModel from '../../../infrastructure/customer/repository/sequelize/customer.model'
+import CustomerRepository from '../../../infrastructure/customer/repository/sequelize/customer.repository'
 
 describe('Integration Test update customer use case', () => {
   let sequelize: Sequelize

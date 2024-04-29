@@ -1,8 +1,8 @@
 import { Sequelize } from 'sequelize-typescript'
 import Product from '../../../domain/product/entity/product'
 import UpdateProductUseCase from './update.product.usecase'
-import ProductModel from '../../../infrasctructure/product/repository/sequelize/product.model'
-import ProductRepository from '../../../infrasctructure/product/repository/sequelize/product.repository'
+import ProductModel from '../../../infrastructure/product/repository/sequelize/product.model'
+import ProductRepository from '../../../infrastructure/product/repository/sequelize/product.repository'
 
 describe('Integration Test update product use case', () => {
   let sequelize: Sequelize
