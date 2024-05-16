@@ -65,7 +65,7 @@ describe('ProductRepository test', () => {
     const productRepository = new ProductRepository();
     const product = await productRepository.find(productProps.id.id)
 
-    expect(productProps.id.id).toBe(product.id)
+    expect(productProps.id.id).toBe(product.id.id)
     expect(productProps.name).toBe(product.name)
     expect(productProps.description).toBe(product.description)
     expect(productProps.purchasePrice).toBe(product.purchasePrice)
