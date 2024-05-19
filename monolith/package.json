@@ -17,9 +17,11 @@
   },
   "scripts": {
     "test": "npx tsc --noEmit && jest",
-    "dev": "nodemon src/infrastructure/api/server.ts"
+    "dev": "nodemon src/infrastructure/api/server.ts",
+    "migrate": "npx -r ts-node ./src/infrastructure/db/config-migrations/migrator-cli.ts"
   },
   "dependencies": {
+    "@types/umzug": "2.3.7",
     "dotenv": "16.4.5",
     "express": "4.19.2",
     "jstoxml": "5.0.1",
@@ -27,6 +29,7 @@
     "sequelize": "6.37.3",
     "sequelize-typescript": "2.1.6",
     "sqlite3": "5.1.7",
+    "umzug": "3.8.0",
     "uuid": "9.0.1",
     "yup": "1.4.0"
   }

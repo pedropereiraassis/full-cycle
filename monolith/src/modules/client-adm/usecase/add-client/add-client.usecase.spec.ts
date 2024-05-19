@@ -16,7 +16,13 @@ describe('AddClientUsecase test', () => {
     const input = {
       name: 'Client 1',
       email: 'client@email.com',
-      address: 'Address 1',
+      document: '000',
+      street: 'Street',
+      number: '10',
+      complement: 'Complement',
+      city: 'City',
+      state: 'State',
+      zipCode: '00000',
     }
 
     const result = await usecase.execute(input)
@@ -26,6 +32,12 @@ describe('AddClientUsecase test', () => {
     expect(validate(result.id)).toBeTruthy()
     expect(result.name).toBe(input.name)
     expect(result.email).toBe(input.email)
-    expect(result.address).toBe(input.address)
+    expect(result.document).toBe(input.document)
+    expect(result.street).toBe(input.street)
+    expect(result.number).toBe(input.number)
+    expect(result.complement).toBe(input.complement)
+    expect(result.city).toBe(input.city)
+    expect(result.state).toBe(input.state)
+    expect(result.zipCode).toBe(input.zipCode)
   })
 })

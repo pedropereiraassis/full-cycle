@@ -28,7 +28,13 @@ describe('ClientAdmFacade test', () => {
       id: '1',
       name: 'Client 1',
       email: 'client@email.com',
-      address: 'Client 1 Address',
+      document: '000',
+      street: 'Street',
+      number: '10',
+      complement: 'Complement',
+      city: 'City',
+      state: 'State',
+      zipCode: '00000',
     }
 
     await clientFacade.addClient(input)
@@ -39,7 +45,13 @@ describe('ClientAdmFacade test', () => {
     expect(client.dataValues.id).toBe(input.id)
     expect(client.dataValues.name).toBe(input.name)
     expect(client.dataValues.email).toBe(input.email)
-    expect(client.dataValues.address).toBe(input.address)
+    expect(client.dataValues.document).toBe(input.document)
+    expect(client.dataValues.street).toBe(input.street)
+    expect(client.dataValues.number).toBe(input.number)
+    expect(client.dataValues.complement).toBe(input.complement)
+    expect(client.dataValues.city).toBe(input.city)
+    expect(client.dataValues.state).toBe(input.state)
+    expect(client.dataValues.zipCode).toBe(input.zipCode)
   })
 
   it('should find a client', async () => {
@@ -49,7 +61,13 @@ describe('ClientAdmFacade test', () => {
       id: '1',
       name: 'Product 1',
       email: 'client@email.com',
-      address: 'Client 1 Address',
+      document: '000',
+      street: 'Street',
+      number: '10',
+      complement: 'Complement',
+      city: 'City',
+      state: 'State',
+      zipCode: '00000',
       createdAt: new Date(),
       updatedAt: new Date(),
     }
@@ -63,7 +81,13 @@ describe('ClientAdmFacade test', () => {
     expect(result.id).toBe(inputCreate.id)
     expect(result.name).toBe(inputCreate.name)
     expect(result.email).toBe(inputCreate.email)
-    expect(result.address).toBe(inputCreate.address)
+    expect(result.document).toBe(inputCreate.document)
+    expect(result.street).toBe(inputCreate.street)
+    expect(result.number).toBe(inputCreate.number)
+    expect(result.complement).toBe(inputCreate.complement)
+    expect(result.city).toBe(inputCreate.city)
+    expect(result.state).toBe(inputCreate.state)
+    expect(result.zipCode).toBe(inputCreate.zipCode)
     expect(result.createdAt).toStrictEqual(inputCreate.createdAt)
     expect(result.updatedAt).toStrictEqual(inputCreate.updatedAt)
   })

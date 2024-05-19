@@ -16,7 +16,13 @@ export default class AddClientUsecase implements UseCaseInterface {
       id: new Id(input.id),
       name: input.name,
       email: input.email,
-      address: input.address,
+      document: input.document,
+      street: input.street,
+      number: input.number,
+      complement: input.complement,
+      city: input.city,
+      state: input.state,
+      zipCode: input.zipCode,
     }
 
     const client = new Client(props)
@@ -26,7 +32,13 @@ export default class AddClientUsecase implements UseCaseInterface {
       id: client.id.id,
       name: client.name,
       email: client.email,
-      address: client.address,
+      document: client.document,
+      street: client.street,
+      number: client.number,
+      complement: client.complement,
+      city: client.city,
+      state: client.state,
+      zipCode: client.zipCode,
       createdAt: client.createdAt,
       updatedAt: client.updatedAt,
     }

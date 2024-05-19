@@ -7,7 +7,13 @@ describe('FindClientUsecase test', () => {
     id: new Id('1'),
     name: 'Client 1',
     email: 'client@email.com',
-    address: 'Address 1',
+    document: '000',
+    street: 'Street',
+    number: '10',
+    complement: 'Complement',
+    city: 'City',
+    state: 'State',
+    zipCode: '00000',
   })
 
   const MockRepository = () => {
@@ -31,7 +37,13 @@ describe('FindClientUsecase test', () => {
     expect(result.id).toBe('1')
     expect(result.name).toBe(client.name)
     expect(result.email).toBe(client.email)
-    expect(result.address).toBe(client.address)
+    expect(result.document).toBe(client.document)
+    expect(result.street).toBe(client.street)
+    expect(result.number).toBe(client.number)
+    expect(result.complement).toBe(client.complement)
+    expect(result.city).toBe(client.city)
+    expect(result.state).toBe(client.state)
+    expect(result.zipCode).toBe(client.zipCode)
     expect(result.createdAt).toBe(client.createdAt)
     expect(result.updatedAt).toBe(client.updatedAt)
   })

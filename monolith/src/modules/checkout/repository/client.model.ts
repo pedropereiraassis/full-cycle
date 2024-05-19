@@ -41,5 +41,4 @@ export default class ClientModel extends Model {
 
   @Column({ allowNull: false })
   declare updatedAt: Date;
-
 }
