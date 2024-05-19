@@ -5,6 +5,7 @@ import ProductAdmFacadeFactory from '../../../modules/product-adm/factory/facade
 import StoreCatalogFacadeFactory from '../../../modules/store-catalog/factory/facade.factory'
 import InvoiceFacadeFactory from '../../../modules/invoice/factory/facade.factory'
 import PaymentFacadeFactory from '../../../modules/payment/factory/facade.factory'
+import CheckoutRepository from '../../../modules/checkout/repository/checkout.repository'
 
 export const checkoutRoute = express.Router()
 

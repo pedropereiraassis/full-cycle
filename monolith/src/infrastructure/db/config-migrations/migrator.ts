@@ -1,6 +1,6 @@
 import { SequelizeStorage, Umzug } from "umzug"
 import { join } from "path"
-import { Sequelize } from "sequelize-typescript"
+import { Sequelize } from "sequelize"
 
 export const migrator = (
   sequelize: Sequelize
@@ -10,13 +10,13 @@ export const migrator = (
       glob: [
         "*/infrastructure/db/migrations/*.{js,ts}",
         {
-          cwd: join(__dirname, "../../../"),
+          cwd: join(__dirname, "../../../../"),
           ignore: ["**/*.d.ts", "**/index.ts", "**/index.js"],
         },
       ],
     },
     context: sequelize,
     storage: new SequelizeStorage({ sequelize }),
-    logger: console
+    logger: undefined,
   })
 }

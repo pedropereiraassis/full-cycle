@@ -44,20 +44,14 @@ export default class CheckoutRepository implements CheckoutGateway {
   }
 
   async addOrder(order: Order): Promise<void> {
-    await OrderModel.create({
+    const createdOrder = await OrderModel.create({
       id: order.id.id,
       status: order.status,
       clientId: order.client.id.id,
-      orders_products: order.products.map((product) => {
-        return {
-          productId: product.id.id,
-          orderId: order.id.id,
-        }
-      }),
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
-    }, {
-      include: ['orders_products'],
     });
+
+    await createdOrder.addProducts(order.products.map(product => product.id.id));
   }
 }

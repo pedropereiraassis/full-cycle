@@ -3,6 +3,8 @@ import Client from "../domain/client.entity";
 import ClientModel from "./client.model";
 import Product from "../domain/product.entity";
 import ProductModel from "./product.model";
+import OrderProductModel from "./order-product.model";
+import { BelongsToManyAddAssociationsMixin } from "sequelize";
 
 @Table({
   tableName: "orders",
@@ -24,9 +26,7 @@ export default class OrderModel extends Model {
   declare client: Client;
 
   @BelongsToMany(() => ProductModel, {
-    through: "orders_products",
-    foreignKey: "orderId",
-    otherKey: "productId",
+    through: () => OrderProductModel,
   })
   declare products: Product[];
 
@@ -35,4 +35,6 @@ export default class OrderModel extends Model {
 
   @Column({ allowNull: false })
   declare updatedAt: Date;
+
+  declare addProducts: BelongsToManyAddAssociationsMixin<ProductModel,ProductModel['id']>;
 }

@@ -7,6 +7,7 @@ import Product from "../domain/product.entity";
 import Id from "../../@shared/domain/value-object/id.value-object";
 import Client from "../domain/client.entity";
 import Order from "../domain/order.entity";
+import OrderProductModel from "./order-product.model";
 
 describe('CheckoutRepository test', () => {
   let sequelize: Sequelize;
@@ -20,6 +21,7 @@ describe('CheckoutRepository test', () => {
         ClientModel,
         ProductModel,
         OrderModel,
+        OrderProductModel,
       ],
       sync: { force: true },
     });

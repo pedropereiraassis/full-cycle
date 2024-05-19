@@ -8,6 +8,10 @@ import InvoiceModel from '../../modules/invoice/repository/invoice.model'
 import TransactionModel from '../../modules/payment/repository/transaction.model'
 import ProductAdmModel from '../../modules/product-adm/repository/product.model'
 import ProductCatalogModel from '../../modules/store-catalog/repository/product.model'
+import OrderModel from '../../modules/checkout/repository/order.model'
+import ClientCheckoutModel from '../../modules/checkout/repository/client.model'
+import ProductCheckoutModel from '../../modules/checkout/repository/product.model'
+import OrderProductModel from '../../modules/checkout/repository/order-product.model'
 
 export const app: Express = express()
 app.use(express.json())
@@ -28,9 +32,12 @@ async function setupDB() {
       TransactionModel,
       ProductAdmModel,
       ProductCatalogModel,
+      OrderModel,
+      ClientCheckoutModel,
+      ProductCheckoutModel,
+      OrderProductModel,
+      ClientModel,
     ],
   })
-
-  await sequelize.sync()
 }
 setupDB()

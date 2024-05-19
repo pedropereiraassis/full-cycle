@@ -17,6 +17,7 @@ productRoute.post('/', async (req: Request, res: Response) => {
     const output = await productAdmFacade.addProduct(productDTO)
     res.send(output)
   } catch (err) {
+    console.log(err)
     res.status(500).send(err)
   }
 })
