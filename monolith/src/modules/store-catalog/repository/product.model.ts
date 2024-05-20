@@ -17,4 +17,7 @@ export default class ProductModel extends Model {
 
   @Column({ allowNull: false })
   declare salesPrice: number;
+
+  @Column({ allowNull: true })
+  declare purchasePrice: number;
 }

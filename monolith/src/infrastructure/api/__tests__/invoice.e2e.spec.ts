@@ -66,7 +66,7 @@ describe('E2E test for invoice', () => {
           },
         ],
       })
-    console.log(checkoutResponse.body.invoiceId)
+
     const response = await request(app)
       .get(`/invoice/${checkoutResponse.body.invoiceId}`)
     

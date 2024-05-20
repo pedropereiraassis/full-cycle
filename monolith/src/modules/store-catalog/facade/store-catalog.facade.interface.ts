@@ -7,6 +7,7 @@ export interface FindProductFacadeOutputDto {
   name: string;
   description: string;
   salesPrice: number;
+  purchasePrice?: number
 }
 
 export interface FindAllProductsFacadeOutputDto {
