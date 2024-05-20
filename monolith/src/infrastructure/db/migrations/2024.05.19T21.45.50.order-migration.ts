@@ -2,31 +2,19 @@ import { DataType, Sequelize } from 'sequelize-typescript';
 import { MigrationFn } from 'umzug';
 
 export const up: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
-  await sequelize.getQueryInterface().createTable('products', {
+  await sequelize.getQueryInterface().createTable('orders', {
     id: {
       type: DataType.STRING(255),
       primaryKey: true,
       allowNull: false,
     },
-    name: {
+    status: {
       type: DataType.STRING(255),
       allowNull: false,
     },
-    description: {
+    clientId: {
       type: DataType.STRING(255),
       allowNull: false,
-    },
-    stock: {
-      type: DataType.NUMBER,
-      allowNull: true,
-    },
-    purchasePrice: {
-      type: DataType.NUMBER,
-      allowNull: true,
-    },
-    salesPrice: {
-      type: DataType.NUMBER,
-      allowNull: true,
     },
     createdAt: {
       type: DataType.DATE,
@@ -40,5 +28,5 @@ export const up: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
 };
 
 export const down: MigrationFn<Sequelize> = async ({ context: sequelize }) => {
-  await sequelize.getQueryInterface().dropTable('products')
+  await sequelize.getQueryInterface().dropTable('orders')
 } 

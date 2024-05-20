@@ -12,11 +12,15 @@ import OrderModel from '../../modules/checkout/repository/order.model'
 import ClientCheckoutModel from '../../modules/checkout/repository/client.model'
 import ProductCheckoutModel from '../../modules/checkout/repository/product.model'
 import OrderProductModel from '../../modules/checkout/repository/order-product.model'
+import { checkoutRoute } from './routes/checkout.route'
+import { invoiceRoute } from './routes/invoice.route'
 
 export const app: Express = express()
 app.use(express.json())
 app.use('/clients', clientRoute)
 app.use('/products', productRoute)
+app.use('/checkout', checkoutRoute)
+app.use('/invoice', invoiceRoute)
 
 export let sequelize: Sequelize
 
