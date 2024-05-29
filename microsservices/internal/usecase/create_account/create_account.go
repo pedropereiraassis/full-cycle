@@ -1,4 +1,4 @@
-package createaccount
+package create_account
 
 import (
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/entity"
@@ -6,16 +6,16 @@ import (
 )
 
 type CreateAccountInputDTO struct {
-	ClientID string
+	ClientID string `json:"clientId"`
 }
 
 type CreateAccountOutputDTO struct {
-	ID string
+	ID string `json:"id"`
 }
 
 type CreateAccountUseCase struct {
 	AccountGateway gateway.AccountGateway
-	ClientGateway gateway.ClientGateway
+	ClientGateway  gateway.ClientGateway
 }
 
 func NewCreateAccountUseCase(accountGateway gateway.AccountGateway, clientGateway gateway.ClientGateway) *CreateAccountUseCase {
