@@ -2,6 +2,7 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/usecase/create_account"
@@ -18,16 +19,18 @@ func NewWebAccountHandler(createAccountUseCase create_account.CreateAccountUseCa
 }
 
 func (h *WebAccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
-	var inputDto create_account.CreateAccountInputDTO
-	err := json.NewDecoder(r.Body).Decode(&inputDto)
+	var dto create_account.CreateAccountInputDTO
+	err := json.NewDecoder(r.Body).Decode(&dto)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		fmt.Println(err)
 		return
 	}
 
-	output, err := h.CreateAccountUseCase.Execute(inputDto)
+	output, err := h.CreateAccountUseCase.Execute(dto)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Println(err)
 		return
 	}
 
@@ -37,6 +40,5 @@ func (h *WebAccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
 	w.WriteHeader(http.StatusCreated)
 }

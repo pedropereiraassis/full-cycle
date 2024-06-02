@@ -5,28 +5,39 @@ import (
 	"database/sql"
 	"fmt"
 
+	ckafka "github.com/confluentinc/confluent-kafka-go/kafka"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/database"
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/event"
+	"github.com/pedropereiraassis/full-cycle/microsservices/internal/event/handler"
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/usecase/create_account"
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/usecase/create_client"
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/usecase/create_transaction"
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/web"
 	"github.com/pedropereiraassis/full-cycle/microsservices/internal/web/webserver"
 	"github.com/pedropereiraassis/full-cycle/microsservices/pkg/events"
+	"github.com/pedropereiraassis/full-cycle/microsservices/pkg/kafka"
 	"github.com/pedropereiraassis/full-cycle/microsservices/pkg/uow"
 )
 
 func main() {
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", "root", "root", "localhost", "3307", "wallet"))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", "root", "root", "mysql", "3306", "wallet"))
 	if err != nil {
 		panic(err)
 	}
 	defer db.Close()
 
+	configMap := ckafka.ConfigMap{
+		"bootstrap.servers": "kafka:29092",
+		"group.id":          "wallet",
+	}
+	kafkaProducer := kafka.NewKafkaProducer(&configMap)
+
 	eventDispatcher := events.NewEventDispatcher()
+	eventDispatcher.Register("TransactionCreated", handler.NewTransactionCreatedKafkaHandler(kafkaProducer))
+	eventDispatcher.Register("BalanceUpdated", handler.NewBalanceUpdatedKafkaHandler(kafkaProducer))
 	transactionCreatedEvent := event.NewTransactionCreated()
-	// eventDispatcher.Register("TransactionCreated", handler)
+	balanceUpdatedEvent := event.NewBalanceUpdated()
 
 	clientDb := database.NewClientDB(db)
 	accountDb := database.NewAccountDB(db)
@@ -41,19 +52,20 @@ func main() {
 	uow.Register("TransactionDB", func(tx *sql.Tx) interface{} {
 		return database.NewTransactionDB(db)
 	})
-
+	createTransactionUseCase := create_transaction.NewCreateTransactionUseCase(uow, eventDispatcher, transactionCreatedEvent, balanceUpdatedEvent)
 	createClientUseCase := create_client.NewCreateClientUseCase(clientDb)
 	createAccountUseCase := create_account.NewCreateAccountUseCase(accountDb, clientDb)
-	createTransactionUseCase := create_transaction.NewCreateTransactionUseCase(uow, eventDispatcher, transactionCreatedEvent)
+
+	webserver := webserver.NewWebServer(":8080")
 
 	clientHandler := web.NewWebClientHandler(*createClientUseCase)
 	accountHandler := web.NewWebAccountHandler(*createAccountUseCase)
 	transactionHandler := web.NewWebTransactionHandler(*createTransactionUseCase)
 
-	webServer := webserver.NewWebServer(":3000")
-	webServer.Addhandler("/clients", clientHandler.CreateClient)
-	webServer.Addhandler("/accounts", accountHandler.CreateAccount)
-	webServer.Addhandler("/transactions", transactionHandler.CreateTransaction)
+	webserver.Addhandler("/clients", clientHandler.CreateClient)
+	webserver.Addhandler("/accounts", accountHandler.CreateAccount)
+	webserver.Addhandler("/transactions", transactionHandler.CreateTransaction)
 
-	webServer.Start()
+	fmt.Println("Server is running")
+	webserver.Start()
 }
