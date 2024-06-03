@@ -1,27 +1,75 @@
 version: '3'
 
 services:
-  goapp:
-    build: .
-    container_name: goapp
+  wallet_core_app:
+    build: ./wallet_core
+    container_name: wallet_core_app
     platform: linux/amd64
     volumes:
-      - .:/app
+      - ./wallet_core:/app
+    command: go run cmd/walletcore/main.go
     ports:
       - 8080:8080
+    depends_on:
+      - kafka
 
-  mysql:
+  wallet_core_db:
     image: mysql:5.7
-    container_name: mysql
+    container_name: wallet_core_db
     platform: linux/amd64
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: wallet
+      MYSQL_DATABASE: wallet_core
       MYSQL_PASSWORD: root
     ports:
       - 3307:3306
     volumes:
-      - .docker/mysql:/var/lib/mysql
+      - ./wallet_core/.docker/wallet_core_db:/var/lib/wallet_core_db
+
+  wallet_core_populate:
+    build: ./wallet_core
+    container_name: wallet_core_populate
+    volumes:
+      - ./wallet_core:/app
+    command: sh -c 'go run cmd/database/migrate/main.go && go run cmd/database/seed/main.go'
+    depends_on:
+      - wallet_core_db
+    restart: on-failure
+
+  balances_app:
+    build: ./balances
+    container_name: balances_app
+    platform: linux/amd64
+    volumes:
+      - ./balances:/app
+    command: go run cmd/balances/main.go
+    ports:
+      - 3003:3003
+    depends_on:
+      - kafka
+
+  balances_db:
+    image: mysql:5.7
+    container_name: balances_db
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: balances
+      MYSQL_PASSWORD: root
+    ports:
+      - 3308:3306
+    volumes:
+      - ./balances/.docker/balances_db:/var/lib/balances_db
+
+  balances_populate:
+    build: ./balances
+    container_name: balances_populate
+    volumes:
+      - ./balances:/app
+    command: sh -c 'go run cmd/database/migrate/main.go && go run cmd/database/seed/main.go'
+    depends_on:
+      - balances_db
+    restart: on-failure
   
   zookeeper:
     image: "confluentinc/cp-zookeeper:6.1.0"
