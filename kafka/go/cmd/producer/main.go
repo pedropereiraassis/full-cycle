@@ -11,15 +11,18 @@ func main() {
 	deliveryChan := make(chan kafka.Event)
 	producer := NewKafkaProducer()
 	defer producer.Close()
-	Publish("Hello, Kafka!", "test", producer, nil, deliveryChan)
+	Publish("Transaction made", "test", producer, []byte("transaction"), deliveryChan)
 	go DeliveryReport(deliveryChan) // async
 
-	producer.Flush(1000)
+	producer.Flush(2000)
 }
 
 func NewKafkaProducer() *kafka.Producer {
 	configMap := &kafka.ConfigMap{
 		"bootstrap.servers": "go-kafka-1:9092",
+		"delivery.timeout.ms": "0", // 0 means infinite timeout
+		"acks": "all", // 0: no ack (high performance), 1: leader ack (medium performance), all: leader and replicas ack (low performance)
+		"enable.idempotence": "true", // guarantees that messages are not duplicated - must be used with acks=all
 	}
 
 	producer, err := kafka.NewProducer(configMap)
