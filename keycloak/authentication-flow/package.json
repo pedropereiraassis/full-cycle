@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "authorization-code": "nodemon --exec ts-node ./authorization-code-flow/src/index.ts"
+    "authorization-code": "nodemon --exec ts-node ./authorization-code-flow/src/index.ts",
+    "implicit": "npm run dev -w implicit-flow"
   },
+  "workspaces": [
+    "implicit-flow"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
