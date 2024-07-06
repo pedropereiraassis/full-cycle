@@ -4,10 +4,13 @@
   "main": "index.js",
   "scripts": {
     "authorization-code": "nodemon --exec ts-node ./authorization-code-flow/src/index.ts",
-    "implicit": "npm run dev -w implicit-flow"
+    "implicit": "npm run dev -w implicit-flow",
+    "hybrid": "npm run dev -w hybrid-flow",
+    "resource-owner": "nodemon --exec ts-node ./resource-owner-password-credentials/src/index.ts"
   },
   "workspaces": [
-    "implicit-flow"
+    "implicit-flow",
+    "hybrid-flow"
   ],
   "keywords": [],
   "author": "",

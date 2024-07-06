@@ -1,30 +1,23 @@
-# React + TypeScript + Vite
+# Implicit Flow
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+O fluxo Implicit Flow é geralmente recomendado para aplicativos de página única (single-page applications) e aplicativos móveis em que a confidencialidade do cliente não é uma prioridade. Esse fluxo simplifica o processo de autorização, permitindo que o cliente (aplicativo) obtenha o token de acesso diretamente do servidor de autorização, sem a necessidade de uma troca adicional de código de autorização.
 
-Currently, two official plugins are available:
+O fluxo Implicit Flow é mais adequado quando você possui um aplicativo front-end JavaScript que interage diretamente com o servidor de autorização. Nesse fluxo, o aplicativo faz uma solicitação de autorização ao servidor de autorização, que responde fornecendo o token de acesso diretamente no navegador do usuário.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+No entanto, o fluxo Implicit Flow apresenta algumas limitações de segurança em comparação com o fluxo Authorization Code Flow. O token de acesso é retornado diretamente no navegador do usuário, o que pode expô-lo a ataques de cross-site scripting (XSS) se as devidas precauções de segurança não forem tomadas. Além disso, o fluxo Implicit Flow não permite a renovação de tokens de acesso sem a intervenção do usuário.
 
-## Expanding the ESLint configuration
+Em resumo, o fluxo Implicit Flow é recomendado para aplicativos de página única e aplicativos móveis em que a confidencialidade do cliente não é uma preocupação crítica, e quando a simplicidade de obtenção do token de acesso diretamente no navegador do usuário é uma consideração importante. No entanto, é importante estar ciente das limitações de segurança associadas a esse fluxo e implementar as medidas apropriadas para proteger os tokens de acesso.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Uma coisa a observar é que apenas um token de acesso é fornecido e não há token de atualização. Isso significa que uma vez que o token de acesso expirou, o aplicativo deve fazer o redirecionamento para o Keycloak novamente para obter um novo token de acesso.
 
-- Configure the top-level `parserOptions` property like this:
+## Single Sign On
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+Similar ao Authorization Code Flow, o Implicit Flow também suporta Single Sign On (SSO). O SSO permite que um usuário faça login em um aplicativo e seja autenticado em outros aplicativos automaticamente, sem precisar fornecer suas credenciais novamente.
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Configuração
+
+response_type=token ou response_type=token id_token
+
+## A hashtag é acrescentada ao redirecionamento
+
+http://localhost:3000/callback#state=YKWruxpK9QzU3vwOi5IxWg%3D%3D&session_state=593006ef-0a13-4472-bfef-5f4776fe3441&access_token=XXXXX&id_token=XXXXX&token_type=Bearer&expires_in=900
