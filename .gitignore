@@ -4,4 +4,3 @@
 *dist/
 *:memory
 *db.sqlite
-.docker
