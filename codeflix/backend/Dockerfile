@@ -1,7 +1,7 @@
 FROM node:20.15.0-slim
 
-USER node
-
 WORKDIR /home/node/app
+
+USER node
 
 CMD ["tail", "-f", "/dev/null"]
