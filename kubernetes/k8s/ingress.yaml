@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-host
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  rules:
+    - host: "ingress.fullcycle.com.br" # change this to the real domain
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              serviceName: goserver-service
+              servicePort: 4000
+  tls:
+    - hosts:
+        - "ingress.fullcycle.com.br" # change this to the real domain
+      secretName: letsencrypt-tls
+# for all this to work, you need to install ingress nginx and run it on k8s
+# and install cert-manager and run it on k8s
+# and create a ClusterIssuer with letsencrypt issuer (k8s/cluster-issuer.yaml)

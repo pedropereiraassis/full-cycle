@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+spec:
+  selector:
+    matchLabels:
+      app: goserver
+  replicas: 1
+  template:
+    metadata:
+      name: "goserver"
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: "goserver"
+          image: "pedropereiraassis/hello-go:v6.7"
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 3
+            failureThreshold: 30
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            # initialDelaySeconds: 10
+            periodSeconds: 3
+            failureThreshold: 1
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            # initialDelaySeconds: 15
+            periodSeconds: 5
+            failureThreshold: 1
+            timeoutSeconds: 1
+            successThreshold: 1
+
+          resources:
+            requests:
+              memory: 20Mi
+              cpu: 100m
+            limits:
+              memory: 30Mi
+              cpu: 500m
+
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: goserver-env
+            - secretRef:
+                name: goserver-secret
+          # env:
+          #   - name: TEST
+          #     value: "test"
+          #   - name: NAME
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: goserver-env
+          #         key: NAME
+          #   - name: AGE
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: goserver-env
+          #         key: AGE
+          volumeMounts:
+            - name: config
+              mountPath: "/go/myfamily"
+              readOnly: true
+            - name: goserver-volume
+              mountPath: "/go/pvc"
+      volumes:
+        - name: goserver-volume
+          persistentVolumeClaim:
+            claimName: goserver-pvc
+        - name: config
+          configMap:
+            name: configmap-family
+            items:
+              - key: members
+                path: "family.txt"
