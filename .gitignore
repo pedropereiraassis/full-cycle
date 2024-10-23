@@ -4,3 +4,4 @@
 *dist/
 *:memory
 *db.sqlite
+elasticsearch_data/
