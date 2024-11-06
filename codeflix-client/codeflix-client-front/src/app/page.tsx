@@ -2,12 +2,12 @@ import Header from './components/Header';
 import { MovieRow } from './components/MovieRow';
 import { Banner } from './components/Banner';
 import {
-  // getFeaturedMovieById,
+  getFeaturedMovieById,
   getMoviesByGenre,
 } from './service/MovieService';
 import {
   // getMoviesByGenre,
-  getFeaturedMovieById,
+  // getFeaturedMovieById,
 } from './service/MovieQuery';
 
 export default async function Home() {
