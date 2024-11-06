@@ -1,7 +1,14 @@
 import Header from './components/Header';
 import { MovieRow } from './components/MovieRow';
 import { Banner } from './components/Banner';
-import { getFeaturedMovieById, getMoviesByGenre } from './service/MovieService';
+import {
+  // getFeaturedMovieById,
+  getMoviesByGenre,
+} from './service/MovieService';
+import {
+  // getMoviesByGenre,
+  getFeaturedMovieById,
+} from './service/MovieQuery';
 
 export default async function Home() {
   const featuredMovie = await getFeaturedMovieById('106');

@@ -1,0 +1,19 @@
+type Movie {
+  id: ID!
+  title: String
+  description: String
+  yearLaunched: String
+  link: String
+  genres: [String]
+  thumbFileURL: String
+  bannerFileURL: String
+  videoFileURL: String
+  rating: String
+}
+
+type Query {
+  movies: [Movie]
+  movie(id: ID!): Movie
+  featuredMovies: [Movie]
+  moviesByGenre(genre: String!, limit: Int): [Movie]
+}

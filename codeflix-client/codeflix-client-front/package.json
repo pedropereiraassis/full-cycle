@@ -12,8 +12,10 @@
     "server": "json-server -w db.json --port 3333"
   },
   "dependencies": {
+    "@apollo/client": "^3.11.8",
     "@heroicons/react": "^2.1.5",
     "@vidstack/react": "^1.12.12",
+    "graphql": "^16.9.0",
     "next": "13.5.7",
     "react": "^18",
     "react-dom": "^18",
