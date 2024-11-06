@@ -8,6 +8,7 @@ export const Logo = () => {
       alt='logo'
       width={90}
       height={90}
-      className='cursor-pointer' />
+      className='cursor-pointer'
+    />
   );
 };

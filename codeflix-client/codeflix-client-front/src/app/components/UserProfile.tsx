@@ -10,7 +10,8 @@ export const UserProfile = () => {
         alt='profile'
         width={40}
         height={40}
-        className='cursor-pointer rounded' />
+        className='cursor-pointer rounded'
+      />
     </div>
   );
 };

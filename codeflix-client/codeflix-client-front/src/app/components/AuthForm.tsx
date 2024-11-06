@@ -8,10 +8,7 @@ export type AuthFormProps = {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 };
 
-export const AuthForm: React.FC<AuthFormProps> = ({
-  formType,
-  onSubmit,
-}) => {
+export const AuthForm: React.FC<AuthFormProps> = ({ formType, onSubmit }) => {
   const formProps = {
     title: 'Login',
     questionText: 'New to the app?',
