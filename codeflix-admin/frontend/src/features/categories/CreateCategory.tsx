@@ -1,39 +1,49 @@
-import { Box, Paper, Typography } from '@mui/material'
-import { useState } from 'react'
-import { Category, createCategory } from './categorySlice'
-import { CategoryForm } from './components/CategoryForm'
-import { useAppDispatch } from '../../app/hooks'
-import { useSnackbar } from 'notistack'
+import { Box, Paper, Typography } from "@mui/material";
+import { useSnackbar } from "notistack";
+import { useEffect, useState } from "react";
+import { Category } from "../../types/Category";
+import { useCreateCategoryMutation } from "./categorySlice";
+import { CategoryFrom } from "./components/CategoryFrom";
 
 export const CategoryCreate = () => {
-  const [isDisabled, setIsDisabled] = useState(false)
+  const { enqueueSnackbar } = useSnackbar();
+  const [createCategory, status] = useCreateCategoryMutation();
+  const [isdisabled, setIsdisabled] = useState(false);
   const [categoryState, setCategoryState] = useState<Category>({
-    id: '',
-    name: '',
-    description: '',
+    id: "",
+    name: "",
     is_active: false,
-    created_at: '',
-    updated_at: '',
-    deleted_at: null,
-  })
-  const dispatch = useAppDispatch()
-  const { enqueueSnackbar } = useSnackbar()
+    created_at: "",
+    updated_at: "",
+    deleted_at: "",
+    description: "",
+  });
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    dispatch(createCategory(categoryState))
-    enqueueSnackbar('Success creating category', { variant: 'success' })
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    await createCategory(categoryState);
   }
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target
-    setCategoryState({ ...categoryState, [name]: value })
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCategoryState({ ...categoryState, [name]: value });
+  };
 
-  const handleToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = event.target
-    setCategoryState({ ...categoryState, [name]: checked })
-  }
+  const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setCategoryState({ ...categoryState, [name]: checked });
+  };
+
+  useEffect(() => {
+    if (status.isSuccess) {
+      enqueueSnackbar("Category created successfully", { variant: "success" });
+      setIsdisabled(true);
+    }
+    if (status.error) {
+      enqueueSnackbar("Category not created", { variant: "error" });
+    }
+  }, [enqueueSnackbar, status.error, status.isSuccess]);
+
   return (
     <Box>
       <Paper>
@@ -42,15 +52,15 @@ export const CategoryCreate = () => {
             <Typography variant="h4">Create Category</Typography>
           </Box>
         </Box>
-        <CategoryForm
-          category={categoryState}
-          isDisabled={isDisabled}
+        <CategoryFrom
           isLoading={false}
+          isdisabled={isdisabled}
+          category={categoryState}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
           handleToggle={handleToggle}
-        ></CategoryForm>
+        />
       </Paper>
     </Box>
-  )
-}
+  );
+};
