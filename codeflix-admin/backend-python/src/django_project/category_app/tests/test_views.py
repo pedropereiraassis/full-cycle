@@ -3,7 +3,7 @@ import pytest
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from django_project.category_app.repository import DjangoORMCategoryRepository
+from src.django_project.category_app.repository import DjangoORMCategoryRepository
 from src.core.category.domain.category import Category
 
 
