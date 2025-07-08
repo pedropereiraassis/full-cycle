@@ -57,7 +57,7 @@ class TestUpdateGenre:
         )
 
         input = UpdateGenre.Input(
-            id=uuid.uuid4(), name="Action", category_ids=set(), is_active=True
+            id=uuid.uuid4(), name="Action", categories=set(), is_active=True
         )
 
         with pytest.raises(GenreNotFound, match="Genre with .* not found"):
@@ -80,7 +80,7 @@ class TestUpdateGenre:
         )
 
         input = UpdateGenre.Input(
-            id=genre.id, name="", category_ids={movie_category.id}, is_active=True
+            id=genre.id, name="", categories={movie_category.id}, is_active=True
         )
 
         with pytest.raises(InvalidGenre, match="name cannot be empty"):
@@ -103,7 +103,7 @@ class TestUpdateGenre:
         )
 
         input = UpdateGenre.Input(
-            id=genre.id, name="Action", category_ids={movie_category.id}, is_active=True
+            id=genre.id, name="Action", categories={movie_category.id}, is_active=True
         )
 
         with pytest.raises(
@@ -131,7 +131,7 @@ class TestUpdateGenre:
         )
 
         input = UpdateGenre.Input(
-            id=genre.id, name="Drama", category_ids={movie_category.id}, is_active=False
+            id=genre.id, name="Drama", categories={movie_category.id}, is_active=False
         )
 
         use_case.execute(input)

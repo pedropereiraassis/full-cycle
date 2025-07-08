@@ -34,7 +34,7 @@ class TestUpdateGenre:
         input = UpdateGenre.Input(
             id=genre.id,
             name="Action",
-            category_ids={documentary_category.id},
+            categories={documentary_category.id},
             is_active=False,
         )
 

@@ -21,7 +21,7 @@ class UpdateGenre:
     class Input:
         id: UUID
         name: str
-        category_ids: set[UUID]
+        categories: set[UUID]
         is_active: bool
 
     def execute(self, input: Input) -> None:
@@ -43,11 +43,11 @@ class UpdateGenre:
             raise InvalidGenre(e)
 
         category_ids = {category.id for category in self.category_repository.list()}
-        if not input.category_ids.issubset(category_ids):
+        if not input.categories.issubset(category_ids):
             raise RelatedCategoriesNotFound(
-                f"Categories not found: {input.category_ids - category_ids}"
+                f"Categories not found: {input.categories - category_ids}"
             )
 
-        genre.categories = input.category_ids
+        genre.categories = input.categories
 
         self.repository.update(genre)
