@@ -39,18 +39,23 @@ class TestListAPI:
         expected_data = {
             "data": [
                 {
-                    "id": str(category_movie.id),
-                    "name": "Movie",
-                    "description": "Movie description",
-                    "is_active": True,
-                },
-                {
                     "id": str(category_documentary.id),
                     "name": "Documentary",
                     "description": "Documentary description",
                     "is_active": True,
                 },
-            ]
+                {
+                    "id": str(category_movie.id),
+                    "name": "Movie",
+                    "description": "Movie description",
+                    "is_active": True,
+                },
+            ],
+            "meta": {
+                "current_page": 1,
+                "per_page": 2,
+                "total": 2,
+            },
         }
 
         assert response.status_code == status.HTTP_200_OK

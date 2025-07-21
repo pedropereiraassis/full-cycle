@@ -1,19 +1,26 @@
-from unittest.mock import create_autospec
 from src.core.category.domain.category_repository import CategoryRepository
-from src.core.category.application.list_category import CategoryOutput, ListCategory, ListCategoryRequest, ListCategoryResponse
+from src.core.category.application.list_category import (
+    CategoryOutput,
+    ListCategory,
+    ListOutputMeta,
+)
 from src.core.category.domain.category import Category
-from src.core.category.infra.in_memory_category_repository import InMemoryCategoryRepository
+from src.core.category.infra.in_memory_category_repository import (
+    InMemoryCategoryRepository,
+)
 
 
 class TestListCategory:
     def test_list_category_with_empty_data(self):
         repository = InMemoryCategoryRepository(categories=[])
         use_case = ListCategory(repository=repository)
-        request = ListCategoryRequest()
+        input = ListCategory.Input()
 
-        response = use_case.execute(request)
+        output = use_case.execute(input)
 
-        assert response == ListCategoryResponse(data=[])
+        assert output == ListCategory.Output(
+            data=[], meta=ListOutputMeta(current_page=1, per_page=2, total=0)
+        )
 
     def test_list_category_with_filled_data(self):
         category_movie = Category(
@@ -26,17 +33,17 @@ class TestListCategory:
             description="TV Shows category",
             is_active=True,
         )
-        
+
         repository = InMemoryCategoryRepository()
         repository.save(category_movie)
         repository.save(category_tv_show)
         use_case = ListCategory(repository=repository)
 
-        request = ListCategoryRequest()
+        input = ListCategory.Input()
 
-        response = use_case.execute(request)
+        output = use_case.execute(input)
 
-        assert response == ListCategoryResponse(
+        assert output == ListCategory.Output(
             data=[
                 CategoryOutput(
                     id=category_movie.id,
@@ -50,5 +57,10 @@ class TestListCategory:
                     description=category_tv_show.description,
                     is_active=category_tv_show.is_active,
                 ),
-            ]
+            ],
+            meta=ListOutputMeta(
+                current_page=1,
+                per_page=2,
+                total=2,
+            ),
         )

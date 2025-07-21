@@ -37,9 +37,14 @@ from src.django_project.cast_member_app.serializers import (
 
 class CastMemberViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
+        order_by = request.query_params.get("order_by", "name")
+        current_page = int(request.query_params.get("current_page", 1))
+
+        input = ListCastMember.Input(order_by=order_by, current_page=current_page)
+
         use_case = ListCastMember(repository=DjangoORMCastMemberRepository())
 
-        output = use_case.execute(input=ListCastMember.Input())
+        output = use_case.execute(input=input)
 
         response_serializer = ListCastMemberOutputSerializer(output)
 

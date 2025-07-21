@@ -2,7 +2,11 @@ from src.core.category.domain.category import Category
 from src.core.category.infra.in_memory_category_repository import (
     InMemoryCategoryRepository,
 )
-from src.core.genre.application.use_cases.list_genre import GenreOutput, ListGenre
+from src.core.genre.application.use_cases.list_genre import (
+    GenreOutput,
+    ListGenre,
+    ListOutputMeta,
+)
 from src.core.genre.domain.genre import Genre
 from src.core.genre.infra.in_memory_genre_repository import InMemoryGenreRepository
 
@@ -33,5 +37,6 @@ class TestListGenre:
                     is_active=genre.is_active,
                     categories={movie_category.id, documentary_category.id},
                 )
-            ]
+            ],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=1),
         )

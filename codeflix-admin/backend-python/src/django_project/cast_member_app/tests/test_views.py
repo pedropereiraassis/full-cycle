@@ -45,16 +45,21 @@ class TestListAPI:
         expected_response = {
             "data": [
                 {
-                    "id": str(actor.id),
-                    "name": "John Doe",
-                    "type": "ACTOR",
-                },
-                {
                     "id": str(director.id),
                     "name": "Jane Unknown",
                     "type": "DIRECTOR",
                 },
-            ]
+                {
+                    "id": str(actor.id),
+                    "name": "John Doe",
+                    "type": "ACTOR",
+                },
+            ],
+            "meta": {
+                "current_page": 1,
+                "per_page": 2,
+                "total": 2,
+            },
         }
 
         assert response.status_code == status.HTTP_200_OK

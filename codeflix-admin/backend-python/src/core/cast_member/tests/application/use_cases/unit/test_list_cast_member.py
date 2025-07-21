@@ -6,6 +6,7 @@ import pytest
 from src.core.cast_member.application.use_cases.list_cast_member import (
     CastMemberOutput,
     ListCastMember,
+    ListOutputMeta,
 )
 from src.core.cast_member.application.use_cases.exceptions import InvalidCastMember
 from src.core.cast_member.domain.cast_member import CastMember, CastMemberType
@@ -46,7 +47,9 @@ class TestListCastMember:
 
         output = use_case.execute(input=ListCastMember.Input())
 
-        assert output == ListCastMember.Output(data=[])
+        assert output == ListCastMember.Output(
+            data=[], meta=ListOutputMeta(current_page=1, per_page=2, total=0)
+        )
 
     def test_when_cast_members_exist_then_return_mapped_list(
         self, mock_populated_repository, actor, director
@@ -58,14 +61,15 @@ class TestListCastMember:
         assert output == ListCastMember.Output(
             data=[
                 CastMemberOutput(
-                    id=actor.id,
-                    name=actor.name,
-                    type=actor.type,
-                ),
-                CastMemberOutput(
                     id=director.id,
                     name=director.name,
                     type=director.type,
                 ),
-            ]
+                CastMemberOutput(
+                    id=actor.id,
+                    name=actor.name,
+                    type=actor.type,
+                ),
+            ],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=2),
         )

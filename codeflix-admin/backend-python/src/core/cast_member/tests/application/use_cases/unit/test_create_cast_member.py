@@ -36,9 +36,13 @@ class TestCreateCastMember:
         )
 
         with pytest.raises(
-            InvalidCastMember, match="name cannot be empty"
+            InvalidCastMember,
+            match="^name cannot be empty,type must be a valid CastMemberType: actor or director$",
         ) as exec_info:
             use_case.execute(input)
 
         assert exec_info.type is InvalidCastMember
-        assert str(exec_info.value) == "name cannot be empty"
+        assert (
+            str(exec_info.value)
+            == "name cannot be empty,type must be a valid CastMemberType: actor or director"
+        )

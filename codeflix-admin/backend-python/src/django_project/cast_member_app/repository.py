@@ -9,20 +9,13 @@ class DjangoORMCastMemberRepository(CastMemberRepository):
         self.model = model or CastMemberORM
 
     def save(self, cast_member: CastMember):
-        self.model.objects.create(
-            id=cast_member.id,
-            name=cast_member.name,
-            type=cast_member.type,
-        )
+        cast_member_model = CastMemberModelMapper.to_model(cast_member)
+        cast_member_model.save()
 
     def get_by_id(self, id: UUID) -> CastMember | None:
         try:
             cast_member_model = CastMemberORM.objects.get(id=id)
-            return CastMember(
-                id=cast_member_model.id,
-                name=cast_member_model.name,
-                type=CastMemberType(cast_member_model.type),
-            )
+            return CastMemberModelMapper.to_entity(cast_member_model)
         except self.model.DoesNotExist:
             return None
 
@@ -31,11 +24,7 @@ class DjangoORMCastMemberRepository(CastMemberRepository):
 
     def list(self) -> list[CastMember]:
         return [
-            CastMember(
-                id=cast_member_model.id,
-                name=cast_member_model.name,
-                type=CastMemberType(cast_member_model.type),
-            )
+            CastMemberModelMapper.to_entity(cast_member_model)
             for cast_member_model in self.model.objects.all()
         ]
 
@@ -43,4 +32,22 @@ class DjangoORMCastMemberRepository(CastMemberRepository):
         self.model.objects.filter(pk=cast_member.id).update(
             name=cast_member.name,
             type=cast_member.type,
+        )
+
+
+class CastMemberModelMapper:
+    @staticmethod
+    def to_model(cast_member: CastMember) -> CastMemberORM:
+        return CastMemberORM(
+            id=cast_member.id,
+            name=cast_member.name,
+            type=cast_member.type,
+        )
+
+    @staticmethod
+    def to_entity(cast_member_orm: CastMemberORM) -> CastMember:
+        return CastMember(
+            id=cast_member_orm.id,
+            name=cast_member_orm.name,
+            type=CastMemberType(cast_member_orm.type),
         )

@@ -4,6 +4,7 @@ import pytest
 from src.core.cast_member.application.use_cases.list_cast_member import (
     CastMemberOutput,
     ListCastMember,
+    ListOutputMeta,
 )
 from src.core.cast_member.domain.cast_member import CastMember, CastMemberType
 from src.core.cast_member.infra.in_memory_cast_member_repository import (
@@ -34,7 +35,9 @@ class TestListCastMember:
 
         output = use_case.execute(input)
 
-        assert output == ListCastMember.Output(data=[])
+        assert output == ListCastMember.Output(
+            data=[], meta=ListOutputMeta(current_page=1, per_page=2, total=0)
+        )
 
     def test_list_cast_member(self, actor, director):
         repository = InMemoryCastMemberRepository()
@@ -49,14 +52,15 @@ class TestListCastMember:
         assert output == ListCastMember.Output(
             data=[
                 CastMemberOutput(
-                    id=actor.id,
-                    name=actor.name,
-                    type=actor.type,
-                ),
-                CastMemberOutput(
                     id=director.id,
                     name=director.name,
                     type=director.type,
                 ),
-            ]
+                CastMemberOutput(
+                    id=actor.id,
+                    name=actor.name,
+                    type=actor.type,
+                ),
+            ],
+            meta=ListOutputMeta(current_page=1, per_page=2, total=2),
         )

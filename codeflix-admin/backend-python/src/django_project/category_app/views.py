@@ -22,7 +22,6 @@ from src.core.category.application.exceptions import CategoryNotFound
 from src.core.category.application.get_category import GetCategory, GetCategoryRequest
 from src.core.category.application.list_category import (
     ListCategory,
-    ListCategoryRequest,
 )
 from src.django_project.category_app.repository import DjangoORMCategoryRepository
 from src.core.category.application.update_category import (
@@ -43,7 +42,10 @@ from src.django_project.category_app.serializers import (
 
 class CategoryViewSet(viewsets.ViewSet):
     def list(self, request: Request) -> Response:
-        input = ListCategoryRequest()
+        order_by = request.query_params.get("order_by", "name")
+        current_page = int(request.query_params.get("current_page", 1))
+
+        input = ListCategory.Input(order_by=order_by, current_page=current_page)
 
         use_case = ListCategory(repository=DjangoORMCategoryRepository())
 

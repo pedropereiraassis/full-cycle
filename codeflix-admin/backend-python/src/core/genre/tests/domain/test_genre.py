@@ -58,7 +58,7 @@ class TestChangeName:
     def test_when_name_is_empty(self):
         genre = Genre(name="Romance")
 
-        with pytest.raises(ValueError, match="name cannot be empty"):
+        with pytest.raises(ValueError, match="^name cannot be empty$"):
             genre.change_name("")
 
 

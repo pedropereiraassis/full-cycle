@@ -71,4 +71,7 @@ class TestUpdateCastMember:
             use_case.execute(request)
 
         mock_repository.update.assert_not_called()
-        assert str(exec_info.value) == "name cannot be empty"
+        assert (
+            str(exec_info.value)
+            == "name cannot be empty,type must be a valid CastMemberType: actor or director"
+        )
