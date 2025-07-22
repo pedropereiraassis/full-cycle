@@ -1,13 +1,13 @@
 from dataclasses import dataclass
-from enum import Enum, StrEnum, auto, unique
+from enum import StrEnum, unique
 
 
 @unique
-class MediaStatus(Enum):
-    PENDING = auto()
-    PROCESSING = auto()
-    COMPLETED = auto()
-    ERROR = auto()
+class MediaStatus(StrEnum):
+    PENDING = "PENDING"
+    PROCESSING = "PROCESSING"
+    COMPLETED = "COMPLETED"
+    ERROR = "ERROR"
 
 
 @unique
@@ -23,15 +23,23 @@ class Rating(StrEnum):
 
 @dataclass(frozen=True)
 class ImageMedia:
-    check_sum: str
     name: str
     location: str
 
 
+@unique
+class MediaType(StrEnum):
+    VIDEO = "VIDEO"
+    TRAILER = "TRAILER"
+    BANNER = "BANNER"
+    THUMBNAIL = "THUMBNAIL"
+    THUMBNAIL_HALF = "THUMBNAIL_HALF"
+
+
 @dataclass(frozen=True)
 class AudioVideoMedia:
-    check_sum: str
     name: str
     raw_location: str
     encoded_location: str
     status: MediaStatus
+    media_type: MediaType

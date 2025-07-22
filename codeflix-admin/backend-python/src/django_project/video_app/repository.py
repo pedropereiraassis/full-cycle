@@ -2,11 +2,12 @@ from uuid import UUID
 
 from django.db import transaction
 
+from src.core.video.domain.value_objects import AudioVideoMedia, MediaType
 from src.core.video.domain.video import Video
 from src.core.video.domain.video_repository import VideoRepository
 from src.django_project.video_app.models import (
     Video as VideoORM,
-    AudioVideoMedia,
+    AudioVideoMedia as AudioVideoMediaORM,
 )
 
 
@@ -29,8 +30,8 @@ class DjangoORMVideoRepository(VideoRepository):
 
     def get_by_id(self, id: UUID) -> Video | None:
         try:
-            video_model = VideoORM.objects.get(id=id)
-            return Video(
+            video_model = VideoORM.objects.get(pk=id)
+            video = Video(
                 id=video_model.id,
                 title=video_model.title,
                 description=video_model.description,
@@ -43,6 +44,16 @@ class DjangoORMVideoRepository(VideoRepository):
                 genres=set(video_model.genres.values_list("id", flat=True)),
                 cast_members=set(video_model.cast_members.values_list("id", flat=True)),
             )
+            if video_model.video:
+                video.video = AudioVideoMedia(
+                    name=video_model.video.name,
+                    raw_location=video_model.video.raw_location,
+                    encoded_location=video_model.video.encoded_location,
+                    status=video_model.video.status,
+                    media_type=MediaType.VIDEO,
+                )
+
+            return video
         except VideoORM.DoesNotExist:
             return None
 
@@ -75,7 +86,7 @@ class DjangoORMVideoRepository(VideoRepository):
         else:
             with transaction.atomic():
                 # Remove related medias - if they exist
-                AudioVideoMedia.objects.filter(id=video_model.video_id).delete()
+                AudioVideoMediaORM.objects.filter(id=video_model.id).delete()
 
                 # Update relationships with other entities/aggregates
                 video_model.categories.set(video.categories)
@@ -84,10 +95,11 @@ class DjangoORMVideoRepository(VideoRepository):
 
                 # Persist related medias if they exist in the entity
                 video_model.video = (
-                    AudioVideoMedia.objects.create(
+                    AudioVideoMediaORM.objects.create(
                         name=video.video.name,
                         raw_location=video.video.raw_location,
                         status=video.video.status,
+                        encoded_location=video.video.encoded_location,
                     )
                     if video.video
                     else None

@@ -65,12 +65,16 @@ class Video(models.Model):
 
 
 class ImageMedia(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+
     name = models.CharField(max_length=255)
     raw_location = models.CharField(max_length=255)
 
 
 class AudioVideoMedia(models.Model):
     STATUS_CHOICES = [(status.name, status.value) for status in MediaStatus]
+
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
 
     name = models.CharField(max_length=255)
     raw_location = models.CharField(max_length=255)

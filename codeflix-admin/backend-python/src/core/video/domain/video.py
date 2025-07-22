@@ -2,8 +2,14 @@ from dataclasses import dataclass
 from decimal import Decimal
 from uuid import UUID
 
-from src.core._shared.entity import Entity
-from src.core.video.domain.value_objects import AudioVideoMedia, ImageMedia, Rating
+from src.core._shared.domain.entity import Entity
+from src.core.video.domain.value_objects import (
+    AudioVideoMedia,
+    ImageMedia,
+    MediaStatus,
+    MediaType,
+    Rating,
+)
 
 
 @dataclass
@@ -38,6 +44,15 @@ class Video(Entity):
 
         if self.notification.has_errors:
             raise ValueError(self.notification.messages)
+
+    def publish(self):
+        if not self.video:
+            self.notification.add_error("Video media is required to publish the video")
+        elif self.video.status != MediaStatus.COMPLETED:
+            self.notification.add_error("Video must be fully processed to be published")
+
+        self.published = True
+        self.validate()
 
     def update(
         self, title, description, launch_year, duration, opened, published, rating
@@ -92,6 +107,28 @@ class Video(Entity):
         self.trailer = trailer
         self.validate()
 
-    def update_video(self, video: AudioVideoMedia):
+    def update_video_media(self, video: AudioVideoMedia):
         self.video = video
+        self.validate()
+
+    def process(self, status, encoded_location):
+        if status == MediaStatus.COMPLETED:
+            self.video = AudioVideoMedia(
+                name=self.video.name,
+                raw_location=self.video.raw_location,
+                media_type=MediaType.VIDEO,
+                status=status,
+                encoded_location=encoded_location,
+            )
+
+            self.publish()
+        else:
+            self.video = AudioVideoMedia(
+                name=self.video.name,
+                raw_location=self.video.raw_location,
+                media_type=MediaType.VIDEO,
+                status=MediaStatus.ERROR,
+                encoded_location="",
+            )
+
         self.validate()

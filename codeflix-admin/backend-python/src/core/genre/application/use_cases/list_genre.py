@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from uuid import UUID
-from src.core._shared.dto import ListOutputMeta
+from src.core._shared.domain.dto import ListOutputMeta
 from src.core.genre.domain.genre_repository import GenreRepository
 
 

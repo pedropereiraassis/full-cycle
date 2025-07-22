@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from src.core._shared.dto import ListOutputMeta
+from src.core._shared.domain.dto import ListOutputMeta
 from src.core.cast_member.application.use_cases.exceptions import InvalidCastMember
 from src.core.cast_member.domain.cast_member import CastMember, CastMemberType
 from src.core.cast_member.domain.cast_member_repository import CastMemberRepository

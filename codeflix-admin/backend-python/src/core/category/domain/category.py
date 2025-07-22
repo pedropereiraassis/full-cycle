@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from src.core._shared.entity import Entity
+from src.core._shared.domain.entity import Entity
 
 
 @dataclass

@@ -4,6 +4,7 @@ from decimal import Decimal
 import pytest
 
 from src.core.video.domain.value_objects import (
+    MediaType,
     Rating,
     ImageMedia,
     AudioVideoMedia,
@@ -51,16 +52,14 @@ class TestVideoEntity:
             categories={uuid4()},
             genres={uuid4()},
             cast_members={uuid4()},
-            banner=ImageMedia(
-                check_sum="16", name="banner.jpg", location="path/to/banner"
-            ),
+            banner=ImageMedia(name="banner.jpg", location="path/to/banner"),
             thumbnail=None,  # Testing None value for an optional attribute
             trailer=AudioVideoMedia(
-                check_sum="1237",
                 name="trailer.mp4",
                 raw_location="raw_path",
                 encoded_location="encoded_path",
                 status=MediaStatus.COMPLETED,
+                media_type=MediaType.VIDEO,
             ),
         )
         assert video.notification.has_errors is False

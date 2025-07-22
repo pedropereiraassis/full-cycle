@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from uuid import UUID
 import uuid
 
-from src.core._shared.notification import Notification
+from src.core._shared.domain.notification import Notification
 
 
 @dataclass(kw_only=True)

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from uuid import UUID
 
-from src.core._shared.notification import Notification
+from src.core._shared.domain.notification import Notification
 from src.core.cast_member.domain.cast_member_repository import CastMemberRepository
 from src.core.category.domain.category_repository import CategoryRepository
 from src.core.genre.domain.genre_repository import GenreRepository
