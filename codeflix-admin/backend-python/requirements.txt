@@ -1,5 +1,7 @@
 asgiref==3.8.1
 asttokens==3.0.0
+cffi==1.17.1
+cryptography==45.0.5
 decorator==5.2.1
 Django==5.2.3
 django-extensions==4.1
@@ -18,7 +20,9 @@ pluggy==1.6.0
 prompt_toolkit==3.0.51
 ptyprocess==0.7.0
 pure_eval==0.2.3
+pycparser==2.22
 Pygments==2.19.1
+PyJWT==2.10.1
 pytest==8.4.0
 pytest-django==4.11.1
 sqlparse==0.5.3

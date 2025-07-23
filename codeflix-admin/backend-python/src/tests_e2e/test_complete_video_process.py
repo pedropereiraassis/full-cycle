@@ -14,6 +14,12 @@ import pika
 from src.core.video.domain.value_objects import MediaStatus
 from src.django_project.video_app.repository import DjangoORMVideoRepository
 
+import jwt
+import os
+
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+
 """
 OBSERVAÇÃO:
 Este teste é um End-to-End completo para o fluxo de criação e processamento dO Video.
@@ -58,23 +64,70 @@ def send_message_to_rabbitmq(video_id: str):
     connection.close()
 
 
+@pytest.fixture
+def auth_client():
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    private_key_pem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption(),
+    ).decode()
+
+    public_key = private_key.public_key()
+    public_key_pem = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    ).decode()
+
+    # 2. Define a env var que seu código usa
+    os.environ["AUTH_PUBLIC_KEY"] = (
+        public_key_pem.replace("-----BEGIN PUBLIC KEY-----\n", "")
+        .replace("-----END PUBLIC KEY-----", "")
+        .replace("\n", "")
+    )
+
+    rsa_keys = {
+        "private_key_pem": private_key_pem,
+        "public_key_pem": public_key_pem,
+        "private_key": private_key,
+    }
+
+    payload = {
+        "sub": "test-user-id",
+        "aud": "account",
+        "iss": "http://auth-server/",
+        "realm_access": {"roles": ["admin"]},
+        # "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1),
+        # "iat": datetime.datetime.utcnow(),
+    }
+
+    # 4. Gera o token com RS256
+    token = jwt.encode(payload, rsa_keys["private_key"], algorithm="RS256")
+
+    print(token)
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+    return client
+
+
 @pytest.mark.django_db(transaction=True)
 class TestCompleteVideoProcess:
-    def test_user_can_create_video_and_add_file_with_complete_process(self) -> None:
+    def test_user_can_create_video_and_add_file_with_complete_process(
+        self, auth_client
+    ) -> None:
         consumer_thread = threading.Thread(target=run_consumer, daemon=True)
         consumer_thread.start()
 
         video_repository = DjangoORMVideoRepository()
-        api_client = APIClient()
 
-        create_response = api_client.post(
+        create_response = auth_client.post(
             "/api/categories/",
             data={"name": "Movie", "description": "Movie description"},
         )
         assert create_response.status_code == 201
         created_category_id = create_response.data["id"]
 
-        create_response = api_client.post(
+        create_response = auth_client.post(
             "/api/genres/",
             data={
                 "name": "Drama",
@@ -86,7 +139,7 @@ class TestCompleteVideoProcess:
         assert create_response.status_code == 201
         created_genre_id = create_response.data["id"]
 
-        create_response = api_client.post(
+        create_response = auth_client.post(
             "/api/cast_members/",
             data={
                 "name": "John Doe",
@@ -96,7 +149,7 @@ class TestCompleteVideoProcess:
         assert create_response.status_code == 201
         created_cast_member_id = create_response.data["id"]
 
-        create_response = api_client.post(
+        create_response = auth_client.post(
             "/api/videos/",
             data={
                 "title": "New Video",
@@ -115,7 +168,7 @@ class TestCompleteVideoProcess:
 
         assert created_video_id is not None
 
-        update_response = api_client.patch(
+        update_response = auth_client.patch(
             f"/api/videos/{created_video_id}/",
             format="multipart",
             data={"video_file": io.BytesIO(b"dummy binary data for the file")},
