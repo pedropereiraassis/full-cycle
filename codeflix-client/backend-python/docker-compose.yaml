@@ -1,0 +1,205 @@
+services:
+  mysql:
+    container_name: mysql
+    hostname: mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: codeflix
+      MYSQL_USER: codeflix
+      MYSQL_PASSWORD: codeflix
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - mysql-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  kafka:
+    container_name: kafka
+    hostname: kafka
+    image: apache/kafka:3.7.0
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT_HOST://localhost:9092,PLAINTEXT://kafka:19092"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:29093"
+      KAFKA_LISTENERS: "CONTROLLER://:29093,PLAINTEXT_HOST://:9092,PLAINTEXT://:19092"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      CLUSTER_ID: "4L6g3nShT-eMCtK--X86sw"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+      KAFKA_LOG4J_ROOT_LOGLEVEL: INFO
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/kafka/bin/kafka-topics.sh",
+          "--bootstrap-server",
+          "localhost:9092",
+          "--list",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - kafka-data:/var/lib/kafka
+
+  connect:
+    container_name: connect
+    hostname: connect
+    image: quay.io/debezium/connect:2.5
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:19092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_PLUGIN_PATH: /kafka/connect,/kafka/extra-plugins
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/connectors"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    depends_on:
+      kafka:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./kafka-connect/connect-plugins:/kafka/extra-plugins
+
+  elasticsearch:
+    container_name: elasticsearch
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  connect-setup:
+    container_name: connect-setup
+    image: curlimages/curl
+    volumes:
+      - ./kafka-connect/bin:/kafka-connect/bin
+    depends_on:
+      connect:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    command: ["sh", "-c", "/kafka-connect/bin/connect-setup.sh"]
+    restart: "no"
+
+  elasticsearch-test:
+    container_name: elasticsearch-test
+    hostname: elasticsearch-test
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    ports:
+      - "9201:9200"
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms128m -Xmx128m"
+      - "indices.fielddata.cache.size=5%"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    profiles:
+      - test
+
+  tests:
+    build: .
+    environment:
+      PYTHONPATH: /app
+      ELASTICSEARCH_TEST_HOST: "http://elasticsearch-test:9200"
+    container_name: tests
+    command: ["pytest", "-vv", "-s"]
+    depends_on:
+      elasticsearch-test:
+        condition: service_healthy
+    profiles:
+      - test
+    ports:
+      - "5678:5678"
+    volumes:
+      - .:/app
+
+  fastapi:
+    build: .
+    container_name: fastapi
+    hostname: fastapi
+    environment:
+      PYTHONPATH: /app
+      ELASTICSEARCH_HOST: "http://elasticsearch:9200"
+      KEYCLOAK_PUBLIC_KEY: ${KEYCLOAK_PUBLIC_KEY}
+    ports:
+      - "8000:8000"
+    command: fastapi dev src/infra/api/http/main.py --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthcheck/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - .:/app
+
+  consumer:
+    build: .
+    container_name: consumer
+    hostname: consumer
+    environment:
+      PYTHONPATH: "/app"
+      ELASTICSEARCH_HOST: "http://elasticsearch:9200"
+    command: ["python", "src/infra/kafka/consumer.py"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+    volumes:
+      - .:/app
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+    command: ["start-dev"]
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+
+volumes:
+  mysql-data:
+  kafka-data:
+  elasticsearch-data:
+  keycloak-data:
